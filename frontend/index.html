@@ -1,0 +1,84 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+        }
+
+        #old, #new {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <h1 id="count"></h1>
+
+    <div id="old">
+        <h2>Old landing page</h2>
+    </div>
+    <div id="new">
+        <h2>New landing page</h2>
+    </div>
+
+    <script>
+
+
+        let count = localStorage.getItem('count');
+
+        if (count) {
+            count = Number(count);
+            count++;
+        } else {
+            count = 0;
+        }
+
+        localStorage.setItem('count', count);
+
+        document.getElementById('count').innerHTML = count;
+
+        // generate a random Id
+        function randomId(length) {
+            let result           = '';
+            const characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+            const charactersLength = characters.length;
+            for ( let i = 0; i < length; i++ ) {
+                result += characters.charAt(Math.floor(Math.random() * charactersLength));
+            }
+            return result;
+        }
+
+        //
+        function shouldShowNewLandingPage(){
+            return fetch(`http://localhost:3000/features/${randomId(4)}/new-landing-page`)
+                .then(response => response.json());
+
+        }
+
+        shouldShowNewLandingPage().then(data=> {
+            console.log(data);
+            if (data.isEnabled) {
+                const newLandingPage = document.querySelector('#new');
+                newLandingPage.style.display = "block";
+            } else {
+                const oldLandingPage = document.querySelector('#old');
+                if (oldLandingPage) {
+                    oldLandingPage.style.display = "block";
+                }
+            }
+        })
+
+
+    </script>
+</body>
+</html>
